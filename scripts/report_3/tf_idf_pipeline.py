@@ -64,7 +64,7 @@ def apply_tfidf_vectorization(df, stop_words):
     X = vectorizer.fit_transform(df['text_processed'])
     return X
 
-def perform_kmeans_clustering(X, n_clusters, df):
+def perform_kmeans_clustering(X, n_clusters):
     kmeans = KMeans(n_clusters=n_clusters, n_init=10, random_state=0)
     labels = kmeans.fit_predict(X)
     return labels
@@ -92,19 +92,18 @@ def iterate_over_cluster_sizes(df, X):
     all_results = pd.DataFrame()
 
     for n_clusters in range(2, df['doctype'].nunique() + 4):
-        labels = perform_kmeans_clustering(X, n_clusters, df)
+        labels = perform_kmeans_clustering(X, n_clusters)
         results, df = calculate_clustering_metrics(X, n_clusters, df, labels)
         all_results = pd.concat([all_results, results], ignore_index=True)
 
     all_results[['SS', 'ARI', 'AMI', 'Acc']] = all_results[['SS', 'ARI', 'AMI', 'Acc']].round(3)
     return all_results, df
 
-def visualize_clusters_with_tsne(df, X, labels):
-    # for n_clusters in equal_results['N clusters']:
-    n_clusters = int(df.doctype.nunique())
-
-    kmeans = KMeans(n_clusters=n_clusters, n_init=10, random_state=0)
-    labels = kmeans.fit_predict(X)
+def visualize_clusters_with_tsne(df, X, labels=None, calculate=False):
+    if calculate:
+        n_clusters = int(df.doctype.nunique())
+        kmeans = KMeans(n_clusters=n_clusters, n_init=10, random_state=0)
+        labels = kmeans.fit_predict(X)
 
     df['cluster'] = labels
     clusters = df['cluster'].value_counts().index.tolist()
@@ -126,11 +125,12 @@ def visualize_clusters_with_tsne(df, X, labels):
                         c=colors[i % len(colors)], label=
                         f'{doctype[:min(len(doctype), 20)]} (n={df[df["doctype"] == doctype].shape[0]})')
 
-    axs[0].legend()
+    axs[0].legend(bbox_to_anchor=(1.05, 1), loc='upper left')
     axs[0].set_title(f'Predicted Clusters (T-SNE plot)')
-    axs[1].legend()
+    axs[1].legend(bbox_to_anchor=(1.05, 1), loc='upper left')
     axs[1].set_title('Actual Doctypes')
 
+    plt.tight_layout()
     plt.show()
 
 def perform_text_processing_and_clustering(df, method):
@@ -139,14 +139,14 @@ def perform_text_processing_and_clustering(df, method):
     if method == 'tfidf':
         X = apply_tfidf_vectorization(df, stop_words)
         all_results, df = iterate_over_cluster_sizes(df, X)
-        equal_results = all_results[all_results['Equal'] == True]
-        visualize_clusters_with_tsne(df, X, equal_results)
+        # equal_results = all_results[all_results['Equal'] == True]
+        visualize_clusters_with_tsne(df, X, calculate=True)
         return all_results, df
-    elif method == 'word2vec':
-        df = split_text_into_tokens(df)
-        word_vectors = generate_word2vec_model(df)
-        X = generate_document_vectors_for_dataframe(df, word_vectors)
-        all_results, df = iterate_over_cluster_sizes(df, X)
-        return all_results, df
+    # elif method == 'word2vec':
+    #     df = split_text_into_tokens(df)
+    #     word_vectors = generate_word2vec_model(df)
+    #     X = generate_document_vectors_for_dataframe(df, word_vectors)
+    #     all_results, df = iterate_over_cluster_sizes(df, X)
+    #     return all_results, df
     else:
         print("Not yet.")
