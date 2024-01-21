@@ -125,12 +125,12 @@ def visualize_clusters_with_tsne(df, X, labels=None, calculate=False):
                         c=colors[i % len(colors)], label=
                         f'{doctype[:min(len(doctype), 20)]} (n={df[df["doctype"] == doctype].shape[0]})')
 
-    axs[0].legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    axs[0].legend(bbox_to_anchor=(0, -0.05), loc='upper left')
     axs[0].set_title(f'Predicted Clusters (T-SNE plot)')
-    axs[1].legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    axs[1].legend(bbox_to_anchor=(0, -0.05), loc='upper left')
     axs[1].set_title('Actual Doctypes')
 
-    plt.tight_layout()
+    plt.subplots_adjust(right=0.85)
     plt.show()
 
 def perform_text_processing_and_clustering(df, method):
