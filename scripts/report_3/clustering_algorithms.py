@@ -4,7 +4,7 @@ import pandas as pd
 import hdbscan
 from sklearn.cluster import AgglomerativeClustering, DBSCAN, SpectralClustering, MeanShift, AffinityPropagation, OPTICS, Birch
 
-from tf_idf_pipeline import calculate_clustering_metrics
+from .tf_idf_pipeline import calculate_clustering_metrics
 
 def perform_all_clustering(X, n_clusters, algorithm):
     clustering_algorithms = {
