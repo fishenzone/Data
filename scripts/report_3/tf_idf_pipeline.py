@@ -112,7 +112,7 @@ def visualize_clusters_with_tsne(df, X, labels=None, calculate=False):
     tsne = TSNE(n_components=2, random_state=0)
     X_2d = tsne.fit_transform(X.toarray())
 
-    _, axs = plt.subplots(1, 2, figsize=(12, 6))
+    fig, axs = plt.subplots(1, 2, figsize=(12, 6))
 
     colors = 'cmykrgb'
     for i, cluster in enumerate(clusters):
