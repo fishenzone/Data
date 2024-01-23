@@ -1,6 +1,7 @@
 import os
 import re
 import glob
+from Typing import Tuple
 
 import numpy as np
 import pandas as pd
@@ -21,8 +22,7 @@ from sklearn.metrics import silhouette_score, adjusted_rand_score, adjusted_mutu
 
 # cluster_to_doctype = df.groupby('cluster')['doctype'].agg(lambda x: x.value_counts().index[0]).to_dict()
 
-def calculate_accuracy(df, labels):
-
+def calculate_accuracy(df: pd.DataFrame, labels: np.array) -> Tuple[float, pd.DataFrame]:   
     df['cluster'] = labels
     clusters = df['cluster'].value_counts().index.tolist()
 
