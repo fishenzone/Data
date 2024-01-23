@@ -1,7 +1,7 @@
 import os
 import re
 import glob
-from Typing import Tuple
+from typing import Tuple
 
 import numpy as np
 import pandas as pd
