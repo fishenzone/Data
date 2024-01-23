@@ -19,11 +19,13 @@ def perform_all_clustering(X, n_clusters, algorithm):
         'KMeans': KMeans(n_clusters=n_clusters, n_init=10)
     }
 
+    model = clustering_algorithms[algorithm]
     try:
-        model = clustering_algorithms[algorithm]
-        labels = model.fit_predict(X.toarray())
+        labels = model.fit_predict(X)
     except KeyError:
         raise ValueError(f'Unknown algorithm: {algorithm}')
+    except:
+        labels = model.fit_predict(X.toarray())
         
     return labels
 
@@ -48,5 +50,3 @@ def calculate_all_metrics(X, n_clusters, ds, all_labels):
         all_metrics.append(metrics)
     all_metrics_df = pd.concat(all_metrics, ignore_index=True)
     return all_metrics_df, df
-
-
