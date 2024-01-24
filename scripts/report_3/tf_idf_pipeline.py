@@ -47,19 +47,21 @@ def calculate_accuracy(df: pd.DataFrame, labels: np.array) -> Tuple[float, pd.Da
     df['predicted_doctype'] = df['cluster'].map(cluster_to_doctype)
     df.loc[df.predicted_doctype.isna(), 'predicted_doctype'] = doctype
     accuracy = accuracy_score(df['doctype'], df['predicted_doctype'])
+    # add ari, ami
 
     return accuracy, df
 
-def calculate_lenient_accuracy(df: pd.DataFrame) -> Tuple[float, pd.DataFrame]:   
-
+def calculate_lenient_accuracy(df: pd.DataFrame) -> float:
     doctype_clusters = df.groupby('doctype')['cluster'].nunique()
     penalized_doctypes = doctype_clusters[doctype_clusters >= 3].index
     
     if len(penalized_doctypes) == 0:
         return 1.0
     
-    accuracy = accuracy_score(df[df['doctype'].isin(penalized_doctypes)]['doctype'], df[df['doctype'].isin(penalized_doctypes)]['predicted_doctype'])
-    return accuracy
+    penalized_accuracy = accuracy_score(df[df['doctype'].isin(penalized_doctypes)]['doctype'], df[df['doctype'].isin(penalized_doctypes)]['predicted_doctype'])
+    lenient_accuracy = (penalized_accuracy * len(df[df['doctype'].isin(penalized_doctypes)]) + len(df[~df['doctype'].isin(penalized_doctypes)])) / len(df)
+    
+    return lenient_accuracy
 
 def load_dataframe_from_feather(file_path):
     df = pd.read_feather(file_path)
