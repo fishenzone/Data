@@ -29,17 +29,19 @@ def perform_all_clustering(X, n_clusters, algorithm):
         
     return labels
 
-def calculate_all_metrics(X, n_clusters, ds, all_labels):
+def calculate_all_metrics(X, n_clusters, ds, all_labels, umap_applied):
     df = ds.copy()
     all_metrics = []
     for algorithm, labels in all_labels.items():
         try:
             metrics, df = calculate_clustering_metrics(X, n_clusters, df, labels)
             metrics['algorithm'] = algorithm
+            metrics['umap_applied'] = umap_applied
         except Exception as e:
             print(f"An error occurred with {algorithm}: {str(e)}")
             metrics = pd.DataFrame({
                 'algorithm': [algorithm],
+                'umap_applied': [umap_applied],
                 'N clusters': [0],
                 'SS': [0],
                 'ARI': [0],
