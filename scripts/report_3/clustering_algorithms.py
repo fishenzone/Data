@@ -21,11 +21,11 @@ def perform_all_clustering(X, n_clusters, algorithm):
 
     model = clustering_algorithms[algorithm]
     try:
-        labels = model.fit_predict(X)
+        # labels = model.fit_predict(X)
+        labels = model.fit_predict(X.toarray())
     except KeyError:
         raise ValueError(f'Unknown algorithm: {algorithm}')
-    except:
-        labels = model.fit_predict(X.toarray())
+    # except:
         
     return labels
 
@@ -45,8 +45,9 @@ def calculate_all_metrics(X, n_clusters, ds, all_labels):
                 'ARI': [0],
                 'AMI': [0],
                 'Equal': [False],
-                'Acc': [0]
+                'Acc': [0],
+                'LA': [0],
             })
         all_metrics.append(metrics)
-    all_metrics_df = pd.concat(all_metrics, ignore_index=True)
+    all_metrics_df = pd.concat(all_metrics, ignore_index=True).round(2)
     return all_metrics_df, df

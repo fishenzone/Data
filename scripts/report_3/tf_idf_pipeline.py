@@ -54,9 +54,12 @@ def calculate_lenient_accuracy(df: pd.DataFrame) -> Tuple[float, pd.DataFrame]:
 
     doctype_clusters = df.groupby('doctype')['cluster'].nunique()
     penalized_doctypes = doctype_clusters[doctype_clusters >= 3].index
-
+    
+    if len(penalized_doctypes) == 0:
+        return 1.0
+    
     accuracy = accuracy_score(df[df['doctype'].isin(penalized_doctypes)]['doctype'], df[df['doctype'].isin(penalized_doctypes)]['predicted_doctype'])
-    return accuracy, df
+    return accuracy
 
 def load_dataframe_from_feather(file_path):
     df = pd.read_feather(file_path)
@@ -106,7 +109,7 @@ def iterate_over_cluster_sizes(df, X):
         results, df = calculate_clustering_metrics(X, n_clusters, df, labels)
         all_results = pd.concat([all_results, results], ignore_index=True)
 
-    all_results[['SS', 'ARI', 'AMI', 'Acc']] = all_results[['SS', 'ARI', 'AMI', 'Acc']].round(3)
+    all_results[['SS', 'ARI', 'AMI', 'Acc', 'LA']] = all_results[['SS', 'ARI', 'AMI', 'Acc', 'LA']].round(3)
     return all_results, df
 
 def visualize_clusters_with_tsne(df, X, labels=None, calculate=False):
