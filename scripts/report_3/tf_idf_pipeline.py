@@ -22,7 +22,7 @@ from sklearn.metrics import silhouette_score, adjusted_rand_score, adjusted_mutu
 
 # cluster_to_doctype = df.groupby('cluster')['doctype'].agg(lambda x: x.value_counts().index[0]).to_dict()
 
-def calculate_accuracy(df: pd.DataFrame, labels: np.array) -> Tuple[float, pd.DataFrame]:   
+def calculate_accuracy(df: pd.DataFrame, labels: np.array) -> Tuple[float, pd.DataFrame]:
     df['cluster'] = labels
     clusters = df['cluster'].value_counts().index.tolist()
 
@@ -48,6 +48,14 @@ def calculate_accuracy(df: pd.DataFrame, labels: np.array) -> Tuple[float, pd.Da
     df.loc[df.predicted_doctype.isna(), 'predicted_doctype'] = doctype
     accuracy = accuracy_score(df['doctype'], df['predicted_doctype'])
 
+    return accuracy, df
+
+def calculate_lenient_accuracy(df: pd.DataFrame) -> Tuple[float, pd.DataFrame]:   
+
+    doctype_clusters = df.groupby('doctype')['cluster'].nunique()
+    penalized_doctypes = doctype_clusters[doctype_clusters >= 3].index
+
+    accuracy = accuracy_score(df[df['doctype'].isin(penalized_doctypes)]['doctype'], df[df['doctype'].isin(penalized_doctypes)]['predicted_doctype'])
     return accuracy, df
 
 def load_dataframe_from_feather(file_path):
@@ -77,6 +85,7 @@ def calculate_clustering_metrics(X, n_clusters, df, labels):
 
     is_equal = n_clusters == df['doctype'].nunique()
     accuracy, df = calculate_accuracy(df, labels)
+    lenient_acc = calculate_lenient_accuracy(df)
 
     results = pd.DataFrame({
         'N clusters': [n_clusters],
@@ -84,7 +93,8 @@ def calculate_clustering_metrics(X, n_clusters, df, labels):
         'ARI': [ari],
         'AMI': [ami_score],
         'Equal': [is_equal],
-        'Acc': [accuracy]
+        'Acc': [accuracy],
+        'LA': [lenient_acc],
     })
     return results, df
 
