@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-# import hdbscan
+import hdbscan
 from sklearn.cluster import AgglomerativeClustering, DBSCAN, KMeans, SpectralClustering, MeanShift, AffinityPropagation, OPTICS, Birch
 
 from .tf_idf_pipeline import calculate_clustering_metrics
@@ -13,7 +13,7 @@ def perform_all_clustering(X, n_clusters, algorithm):
         'Spectral': SpectralClustering(n_clusters=n_clusters),
         'MeanShift': MeanShift(bandwidth=2),
         'AffinityPropagation': AffinityPropagation(),
-        # 'HDBSCAN': hdbscan.HDBSCAN(min_cluster_size=10),
+        'HDBSCAN': hdbscan.HDBSCAN(min_cluster_size=10),
         'OPTICS': OPTICS(min_samples=10),
         'BIRCH': Birch(n_clusters=n_clusters),
         'KMeans': KMeans(n_clusters=n_clusters, n_init=10)
