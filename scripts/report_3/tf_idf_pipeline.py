@@ -157,11 +157,11 @@ def perform_text_processing_and_clustering(df, method):
         # equal_results = all_results[all_results['Equal'] == True]
         visualize_clusters_with_tsne(df, X, calculate=True)
         return all_results, df
-    # elif method == 'word2vec':
-    #     df = split_text_into_tokens(df)
-    #     word_vectors = generate_word2vec_model(df)
-    #     X = generate_document_vectors_for_dataframe(df, word_vectors)
-    #     all_results, df = iterate_over_cluster_sizes(df, X)
-    #     return all_results, df
+    elif method == 'word2vec':
+        df = split_text_into_tokens(df)
+        word_vectors = generate_word2vec_model(df)
+        X = generate_document_vectors_for_dataframe(df, word_vectors)
+        all_results, df = iterate_over_cluster_sizes(df, X)
+        return all_results, df
     else:
         print("Not yet.")
