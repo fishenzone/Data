@@ -45,8 +45,8 @@ def remove_stopwords_and_punctuations(df):
     df['text_processed'] = df['text'].apply(lambda x: re.sub('[^\w\s]', '', x.lower()))
     return df, list(stop_words)
 
-def apply_tfidf_vectorization(df, stop_words, min_df=5, max_df=0.5):
-    vectorizer = TfidfVectorizer(stop_words=stop_words, min_df=min_df, max_df=max_df)
+def apply_tfidf_vectorization(df, stop_words, min_df=5, max_df=0.5, ngram_range=(1,1)):
+    vectorizer = TfidfVectorizer(stop_words=stop_words, min_df=min_df, max_df=max_df, ngram_range=ngram_range)
     X = vectorizer.fit_transform(df['text_processed'])
     return X
 
