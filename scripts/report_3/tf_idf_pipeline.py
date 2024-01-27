@@ -22,34 +22,7 @@ from sklearn.metrics import silhouette_score, adjusted_rand_score, adjusted_mutu
 
 # cluster_to_doctype = df.groupby('cluster')['doctype'].agg(lambda x: x.value_counts().index[0]).to_dict()
 
-def calculate_accuracy(df: pd.DataFrame, labels: np.array) -> Tuple[float, pd.DataFrame]:
-    df['cluster'] = labels
-    clusters = df['cluster'].value_counts().index.tolist()
 
-    used_doctypes = set()
-    cluster_to_doctype = {}
-
-
-    for cluster in clusters:
-        doctypes = df[df['cluster'] == cluster]['doctype'].value_counts().index.tolist()
-        for doctype in doctypes:
-            if doctype not in used_doctypes:
-                cluster_to_doctype[cluster] = doctype
-                used_doctypes.add(doctype)
-                break
-
-    remaining_clusters = [cluster for cluster in clusters if cluster not in cluster_to_doctype]
-    remaining_doctypes = df[~df['doctype'].isin(used_doctypes)]['doctype'].value_counts().index.tolist()
-
-    for cluster, doctype in zip(remaining_clusters, remaining_doctypes):
-        cluster_to_doctype[cluster] = doctype
-
-    df['predicted_doctype'] = df['cluster'].map(cluster_to_doctype)
-    df.loc[df.predicted_doctype.isna(), 'predicted_doctype'] = doctype
-    accuracy = accuracy_score(df['doctype'], df['predicted_doctype'])
-    # add ari, ami
-
-    return accuracy, df
 
 def calculate_lenient_accuracy(df: pd.DataFrame) -> float:
     doctype_clusters = df.groupby('doctype')['cluster'].nunique()
