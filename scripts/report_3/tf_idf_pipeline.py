@@ -18,7 +18,7 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import silhouette_score, adjusted_rand_score, adjusted_mutual_info_score
 
-# from umap import UMAP
+from umap import UMAP
 
 # cluster_to_doctype = df.groupby('cluster')['doctype'].agg(lambda x: x.value_counts().index[0]).to_dict()
 
