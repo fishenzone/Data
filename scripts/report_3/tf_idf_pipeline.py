@@ -22,7 +22,21 @@ from sklearn.metrics import silhouette_score, adjusted_rand_score, adjusted_mutu
 
 # cluster_to_doctype = df.groupby('cluster')['doctype'].agg(lambda x: x.value_counts().index[0]).to_dict()
 
+def calculate_accuracy(df: pd.DataFrame, labels: np.array) -> Tuple[float, float, float, pd.DataFrame]:
+    df['cluster'] = labels
+    cluster_to_doctype = df.groupby('cluster')['doctype'].agg(lambda x: x.value_counts().idxmax()).to_dict()
+    df['predicted_doctype'] = df['cluster'].map(cluster_to_doctype)
 
+    accuracy = accuracy_score(df['doctype'], df['predicted_doctype'])
+
+    # Mapping each unique predicted_doctype to a unique cluster
+    doctype_to_adjusted_cluster = {doctype: cluster for cluster, doctype in enumerate(df['predicted_doctype'].unique())}
+    df['adjusted_cluster'] = df['predicted_doctype'].map(doctype_to_adjusted_cluster)
+
+    ari = adjusted_rand_score(df['doctype'], df['adjusted_cluster'])
+    ami = adjusted_mutual_info_score(df['doctype'], df['adjusted_cluster'])
+
+    return accuracy, ari, ami, df
 
 def calculate_lenient_accuracy(df: pd.DataFrame) -> float:
     doctype_clusters = df.groupby('doctype')['cluster'].nunique()
@@ -62,8 +76,8 @@ def calculate_clustering_metrics(X, n_clusters, df, labels):
     ami_score = adjusted_mutual_info_score(df['doctype'], labels)
 
     is_equal = n_clusters == df['doctype'].nunique()
-    accuracy, df = calculate_accuracy(df, labels)
-    lenient_acc = calculate_lenient_accuracy(df)
+    accuracy, ari, ami_score, df = calculate_accuracy(df, labels)
+    # lenient_acc = calculate_lenient_accuracy(df)
 
     results = pd.DataFrame({
         'N clusters': [n_clusters],
@@ -72,7 +86,7 @@ def calculate_clustering_metrics(X, n_clusters, df, labels):
         'AMI': [ami_score],
         'Equal': [is_equal],
         'Acc': [accuracy],
-        'LA': [lenient_acc],
+        # 'LA': [lenient_acc],
     })
     return results, df
 

@@ -49,7 +49,7 @@ def calculate_all_metrics(X, n_clusters, ds, all_labels, umap_applied):
                 'AMI': [0],
                 'Equal': [False],
                 'Acc': [0],
-                'LA': [0],
+                # 'LA': [0],
             })
         all_metrics.append(metrics)
     all_metrics_df = pd.concat(all_metrics, ignore_index=True).round(2)
