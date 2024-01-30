@@ -38,18 +38,6 @@ def calculate_accuracy(df: pd.DataFrame, labels: np.array) -> Tuple[float, float
 
     return accuracy, ari, ami, df
 
-def calculate_lenient_accuracy(df: pd.DataFrame) -> float:
-    doctype_clusters = df.groupby('doctype')['cluster'].nunique()
-    penalized_doctypes = doctype_clusters[doctype_clusters >= 3].index
-    
-    if len(penalized_doctypes) == 0:
-        return 1.0
-    
-    penalized_accuracy = accuracy_score(df[df['doctype'].isin(penalized_doctypes)]['doctype'], df[df['doctype'].isin(penalized_doctypes)]['predicted_doctype'])
-    lenient_accuracy = (penalized_accuracy * len(df[df['doctype'].isin(penalized_doctypes)]) + len(df[~df['doctype'].isin(penalized_doctypes)])) / len(df)
-    
-    return lenient_accuracy
-
 def load_dataframe_from_feather(file_path):
     df = pd.read_feather(file_path)
     return df
