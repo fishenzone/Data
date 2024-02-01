@@ -8,7 +8,6 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-import nltk
 from nltk.corpus import stopwords
 from gensim.models import Word2Vec
 
