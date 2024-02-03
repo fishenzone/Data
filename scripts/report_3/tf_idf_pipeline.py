@@ -15,23 +15,25 @@ from sklearn.manifold import TSNE
 from sklearn.cluster import KMeans
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics import silhouette_score, adjusted_rand_score, adjusted_mutual_info_score
+from sklearn.metrics import silhouette_score, adjusted_rand_score, adjusted_mutual_info_score, rand_score
 
 # cluster_to_doctype = df.groupby('cluster')['doctype'].agg(lambda x: x.value_counts().index[0]).to_dict()
 
-def calculate_accuracy(df: pd.DataFrame, labels: np.array) -> Tuple[float, float, float, pd.DataFrame]:
+def calculate_accuracy(df: pd.DataFrame, labels: np.array, col: str) -> Tuple[float, float, float, pd.DataFrame]:
     df['cluster'] = labels
-    cluster_to_doctype = df.groupby('cluster')['doctype'].agg(lambda x: x.value_counts().idxmax()).to_dict()
-    df['predicted_doctype'] = df['cluster'].map(cluster_to_doctype)
+    cluster_to_col = df.groupby('cluster')[col].agg(lambda x: x.value_counts().idxmax()).to_dict()
+    
+    pred_col = f'predicted_{col}'
+    df[pred_col] = df['cluster'].map(cluster_to_col)
 
-    accuracy = accuracy_score(df['doctype'], df['predicted_doctype'])
+    accuracy = accuracy_score(df[col], df[pred_col])
 
     # Mapping each unique predicted_doctype to a unique cluster
-    doctype_to_adjusted_cluster = {doctype: cluster for cluster, doctype in enumerate(df['predicted_doctype'].unique())}
-    df['adjusted_cluster'] = df['predicted_doctype'].map(doctype_to_adjusted_cluster)
+    doctype_to_adjusted_cluster = {doctype: cluster for cluster, doctype in enumerate(df[pred_col].unique())}
+    df['adjusted_cluster'] = df[pred_col].map(doctype_to_adjusted_cluster)
 
-    ari = adjusted_rand_score(df['doctype'], df['adjusted_cluster'])
-    ami = adjusted_mutual_info_score(df['doctype'], df['adjusted_cluster'])
+    ari = adjusted_rand_score(df[col], df['adjusted_cluster'])
+    ami = adjusted_mutual_info_score(df[col], df['adjusted_cluster'])
 
     return accuracy, ari, ami, df
 
@@ -54,20 +56,23 @@ def perform_kmeans_clustering(X, n_clusters):
     labels = kmeans.fit_predict(X)
     return labels
 
-def calculate_clustering_metrics(X, n_clusters, df, labels):
+def calculate_clustering_metrics(X, n_clusters, df, labels, col):
 
     sil_score = 6.66 if X is None else silhouette_score(X, labels)
-    ari = adjusted_rand_score(df['doctype'], labels)
-    ami_score = adjusted_mutual_info_score(df['doctype'], labels)
+    ari = adjusted_rand_score(df[col], labels)
+    rs = rand_score(df[col], labels)
+    ami_score = adjusted_mutual_info_score(df[col], labels)
 
-    is_equal = n_clusters == df['doctype'].nunique()
-    accuracy, ari, ami_score, df = calculate_accuracy(df, labels)
+
+    is_equal = n_clusters == df[col].nunique()
+    accuracy, ari, ami_score, df = calculate_accuracy(df, labels, col)
     # lenient_acc = calculate_lenient_accuracy(df)
 
     results = pd.DataFrame({
         'N clusters': [n_clusters],
         'SS': [sil_score],
         'ARI': [ari],
+        'RS': [rs],
         'AMI': [ami_score],
         'Equal': [is_equal],
         'Acc': [accuracy],

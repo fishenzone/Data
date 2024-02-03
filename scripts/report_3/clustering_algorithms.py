@@ -30,12 +30,12 @@ def perform_all_clustering(X, n_clusters, algorithm):
         
     return labels
 
-def calculate_all_metrics(X, n_clusters, ds, all_labels, umap_applied):
+def calculate_all_metrics(X, n_clusters, ds, all_labels, umap_applied, col):
     df = ds.copy()
     all_metrics = []
     for algorithm, labels in all_labels.items():
         try:
-            metrics, df = calculate_clustering_metrics(X, n_clusters, df, labels)
+            metrics, df = calculate_clustering_metrics(X, n_clusters, df, labels, col)
             metrics['algorithm'] = algorithm
             metrics['umap_applied'] = umap_applied
         except Exception as e:
