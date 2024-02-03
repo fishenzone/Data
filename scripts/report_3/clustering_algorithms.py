@@ -46,6 +46,7 @@ def calculate_all_metrics(X, n_clusters, ds, all_labels, umap_applied, col):
                 'N clusters': [0],
                 'SS': [0],
                 'ARI': [0],
+                'RS': [0],
                 'AMI': [0],
                 'Equal': [False],
                 'Acc': [0],
