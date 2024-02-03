@@ -1,3 +1,6 @@
+import numpy as np
+from tqdm import tqdm
+
 def custom_distance(u, v, all_fields, mode='mean'):
     dists = []
     mode_to_func = {'mean': np.mean, 'median': np.median, 'sum': np.sum}
