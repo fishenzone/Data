@@ -34,8 +34,9 @@ def calculate_accuracy(df: pd.DataFrame, labels: np.array, col: str) -> Tuple[fl
 
     ari = adjusted_rand_score(df[col], df['adjusted_cluster'])
     ami = adjusted_mutual_info_score(df[col], df['adjusted_cluster'])
-
-    return accuracy, ari, ami, df
+    rs = rand_score(df[col], df['adjusted_cluster'])
+    
+    return accuracy, ari, ami, rs, df
 
 def load_dataframe_from_feather(file_path):
     df = pd.read_feather(file_path)
@@ -58,14 +59,13 @@ def perform_kmeans_clustering(X, n_clusters):
 
 def calculate_clustering_metrics(X, n_clusters, df, labels, col):
 
-    sil_score = 6.66 if X is None else silhouette_score(X, labels)
-    ari = adjusted_rand_score(df[col], labels)
+    sil_score = silhouette_score(X, labels)
     rs = rand_score(df[col], labels)
     ami_score = adjusted_mutual_info_score(df[col], labels)
 
 
     is_equal = n_clusters == df[col].nunique()
-    accuracy, ari, ami_score, df = calculate_accuracy(df, labels, col)
+    accuracy, ari, ami_score, rs, df = calculate_accuracy(df, labels, col)
     # lenient_acc = calculate_lenient_accuracy(df)
 
     results = pd.DataFrame({
