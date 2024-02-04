@@ -20,14 +20,15 @@ def custom_distance(u, v, all_fields, mode='mean'):
             dists.append(0.6 * len_fields)
     return np.sum(dists)
 
-def get_dist_matrix(df):
+def get_dist_matrix(df, dt):
   all_fields = set()
   for fe in df.field_embeddings:
     all_fields.update(fe.keys())
 
   n = len(df)
   dist_matrix = np.zeros((n, n))
-  for i in tqdm(range(n)):
+  desc = f'Calculating dist_matrix for {dt}"'
+  for i in tqdm(range(n), desc=desc):
       for j in range(i+1, n):
           dist_matrix[i, j] = custom_distance(df['field_embeddings'].iloc[i], df['field_embeddings'].iloc[j], all_fields, mode='sum')
           dist_matrix[j, i] = dist_matrix[i, j]
