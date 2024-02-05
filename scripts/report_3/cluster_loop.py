@@ -6,8 +6,6 @@ def custom_distance(u, v, all_fields, mode='mean'):
     mode_to_func = {'mean': np.mean, 'median': np.median, 'sum': np.sum}
     func = mode_to_func[mode]
 
-    # all_fields = set(u.keys()).union(v.keys())
-
     for field_id in all_fields:
         points_u = np.array(u.get(field_id, []))
         points_v = np.array(v.get(field_id, []))
