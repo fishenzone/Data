@@ -63,7 +63,6 @@ def calculate_clustering_metrics(X, n_clusters, df, labels, col):
     rs = rand_score(df[col], labels)
     ami_score = adjusted_mutual_info_score(df[col], labels)
 
-
     is_equal = n_clusters == df[col].nunique()
     accuracy, ari, ami_score, rs, df = calculate_accuracy(df, labels, col)
     # lenient_acc = calculate_lenient_accuracy(df)
