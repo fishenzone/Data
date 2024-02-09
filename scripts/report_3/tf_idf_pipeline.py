@@ -65,7 +65,6 @@ def calculate_clustering_metrics(X, n_clusters, df, labels, col):
 
     is_equal = n_clusters == df[col].nunique()
     accuracy, ari, ami_score, rs, df = calculate_accuracy(df, labels, col)
-    # lenient_acc = calculate_lenient_accuracy(df)
 
     results = pd.DataFrame({
         'N clusters': [n_clusters],
@@ -75,7 +74,6 @@ def calculate_clustering_metrics(X, n_clusters, df, labels, col):
         'AMI': [ami_score],
         'Equal': [is_equal],
         'Acc': [accuracy],
-        # 'LA': [lenient_acc],
     })
     return results, df
 
