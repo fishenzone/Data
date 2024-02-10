@@ -9,7 +9,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 from nltk.corpus import stopwords
-from gensim.models import Word2Vec
 
 from sklearn.manifold import TSNE
 from sklearn.cluster import KMeans
