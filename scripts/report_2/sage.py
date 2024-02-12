@@ -8,7 +8,7 @@ class TextAugmentationPipeline:
         self.char_corruptor = CharAugCorruptor.from_config(char_aug_config)
         self.word_corruptor = WordAugCorruptor.from_config(word_aug_config)
 
-    def _apply_augmentation(self, text, corruptor, action=None, seed=0):
+    def _apply_augmentation(self, text, corruptor, seed, action=None):
         """
         Apply the specified augmentation action using the given corruptor.
         If no action is specified, a random action is chosen.
@@ -17,7 +17,7 @@ class TextAugmentationPipeline:
             return corruptor.corrupt(text, action=action, seed=seed)
         return corruptor.corrupt(text, seed=seed)
 
-    def augment_text(self, text, augmentations):
+    def augment_text(self, text, augmentations, seed=0):
         """
         Augment the text based on specified augmentations and their probabilities.
 
@@ -29,14 +29,18 @@ class TextAugmentationPipeline:
         # Choose augmentation type based on probabilities
         aug_type = np.random.choice(list(augmentations.keys()), p=list(augmentations.values()))
 
-        if aug_type == 'char' or aug_type == 'both':
-            # Apply a random character-level augmentation
-            text = self._apply_augmentation(text, self.char_corruptor)
-
-        if aug_type == 'word' or aug_type == 'both':
-            # Apply a random word-level augmentation
-            text = self._apply_augmentation(text, self.word_corruptor)
-
+        char_actions = ['shift', 'orfo', 'typo', 'delete', 'multiply', 'swap', 'insert']
+        word_actions = ['replace', 'delete', 'swap', 'stopword', 'reverse']
+        char_probs = [0.14] * 7
+        word_probs = [0.2] * 5
+        
+        if aug_type in ('char', 'both'):
+            char_action = np.random.choice(char_actions, p=char_probs)
+            text = self._apply_augmentation(text, self.char_corruptor, seed, char_action)
+            
+        if aug_type in ('word', 'both'):
+            word_action = np.random.choice(word_actions, p=word_probs)
+            text = self._apply_augmentation(text, self.word_corruptor, seed, word_action)
         return text
 
 # Configuration for character-level augmentations
