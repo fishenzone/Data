@@ -15,7 +15,7 @@ class TextAugmentationPipeline:
         """
         if action:
             return corruptor.corrupt(text, action=action, seed=seed)
-        return corruptor.corrupt(text)
+        return corruptor.corrupt(text, seed=seed)
 
     def augment_text(self, text, augmentations):
         """
