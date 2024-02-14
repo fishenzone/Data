@@ -4,12 +4,9 @@ from collections import Counter
 import re
 
 class TextAugmentationPipeline:
-    def __init__(self, char_aug_eng, word_aug_eng, char_aug_rus, word_aug_rus):
-        # Store English and Russian augmenters
-        self.char_aug_eng = char_aug_eng
-        self.word_aug_eng = word_aug_eng
-        self.char_aug_rus = char_aug_rus
-        self.word_aug_rus = word_aug_rus
+    def __init__(self, augmenters):
+        # Expect 'augmenters' to be a dict with language codes as keys and tuples of (CharAug, WordAug) as values
+        self.augmenters = augmenters
 
     def detect_language(self, text):
         # Simple heuristic based on character frequency to guess the language
@@ -27,8 +24,10 @@ class TextAugmentationPipeline:
         lang = self.detect_language(text)
         
         # Select appropriate augmenters based on detected language
-        char_aug = self.char_aug_eng if lang == 'eng' else self.char_aug_rus
-        word_aug = self.word_aug_eng if lang == 'eng' else self.word_aug_rus
+        char_aug, word_aug = self.augmenters.get(lang, (None, None))
+        
+        if not char_aug or not word_aug:
+            raise ValueError(f"No augmenters configured for language '{lang}'")
         
         aug_type = np.random.choice(list(augmentations.keys()), p=list(augmentations.values()))
         
@@ -47,23 +46,19 @@ class TextAugmentationPipeline:
 # Example instantiation and usage
 seed = None
 
-# Initialize English augmenters
-char_aug_eng = CharAug(
-    unit_prob=0.3, min_aug=1, max_aug=5, mult_num=3, lang="eng", platform="pc", random_seed=seed
-)
-word_aug_eng = WordAug(
-    unit_prob=0.4, min_aug=1, max_aug=5, lang="eng", platform="pc", random_seed=seed
-)
+# Initialize augmenters for both languages
+augmenters = {
+    'eng': (
+        CharAug(unit_prob=0.3, min_aug=1, max_aug=5, mult_num=3, lang="eng", platform="pc", random_seed=seed),
+        WordAug(unit_prob=0.4, min_aug=1, max_aug=5, lang="eng", platform="pc", random_seed=seed)
+    ),
+    'rus': (
+        CharAug(unit_prob=0.3, min_aug=1, max_aug=5, mult_num=3, lang="rus", platform="pc", random_seed=seed),
+        WordAug(unit_prob=0.4, min_aug=1, max_aug=5, lang="rus", platform="pc", random_seed=seed)
+    )
+}
 
-# Initialize Russian augmenters
-char_aug_rus = CharAug(
-    unit_prob=0.3, min_aug=1, max_aug=5, mult_num=3, lang="rus", platform="pc", random_seed=seed
-)
-word_aug_rus = WordAug(
-    unit_prob=0.4, min_aug=1, max_aug=5, lang="rus", platform="pc", random_seed=seed
-)
-
-aug_pipeline = TextAugmentationPipeline(char_aug_eng, word_aug_eng, char_aug_rus, word_aug_rus)
+aug_pipeline = TextAugmentationPipeline(augmenters)
 augmentations = {'char': 0.1, 'word': 0.8, 'both': 0.1}
 
 text_eng = "I want to lie down peacefully!"
