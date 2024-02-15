@@ -39,3 +39,27 @@ pred_labels = [...]  # Your model predictions
 true_labels = [...]  # Ground truth labels
 metrics = calculate_metrics(pred_labels, true_labels)
 print(metrics)
+
+
+import pandas as pd
+
+
+df = pd.DataFrame({'A': [1, 2, 3, 4, 5],
+                   'B': [6, 7, 8, 9, 10],
+                   'C': [11, 12, 13, 14, 15]})
+
+max_row = df.max()
+median_row = df.median()
+mean_row = df.mean()
+
+df.loc['min'] = df.min(axis=0)
+df.loc['max'] = df.max(axis=0)
+df.loc['median'] = df.median(axis=0)
+df.loc['mean'] = df.mean(axis=0)
+
+# Filter columns where max value is 0
+filtered_df = df.loc[:, df.max() == 0]
+
+# Print the filtered DataFrame
+print(filtered_df)
+
