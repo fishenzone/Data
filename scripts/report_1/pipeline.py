@@ -46,5 +46,3 @@ times = {}
 for model_name, model in models.items():
     time_taken = measure_embedding_generation_time(model, paragraphs)
     times[model_name] = time_taken
-
-times
