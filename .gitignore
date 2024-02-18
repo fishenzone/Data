@@ -1,3 +1,4 @@
 # .gitignore
 scripts/git_auto_push*.py
 *:Zone.Identifier
+utils.csv
