@@ -43,10 +43,8 @@ class TextAugmentationPipeline:
 
         return text
 
-# Example instantiation and usage
 seed = None
 
-# Initialize augmenters for both languages
 augmenters = {
     'eng': (
         CharAug(unit_prob=0.3, min_aug=1, max_aug=5, mult_num=3, lang="eng", platform="pc", random_seed=seed),
