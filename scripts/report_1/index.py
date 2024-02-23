@@ -18,4 +18,3 @@ def preprocess_paragraphs(texts, char_threshold=100):
             processed_texts.append(preprocess_paragraph(merged_paragraph))
 
     return processed_texts
-
