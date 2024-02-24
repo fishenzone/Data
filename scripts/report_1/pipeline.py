@@ -14,7 +14,7 @@ df = df.iloc[:1]
 
 model_names = {
     'MiniLM-L6': 'sentence-transformers/all-MiniLM-L6-v2',
-    'LaBSE': 'LaBSE',
+    # 'LaBSE': 'LaBSE',
     'rubert-tiny2': 'cointegrated/rubert-tiny2'
 }
 
