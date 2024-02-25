@@ -1,3 +1,5 @@
+import time
+
 df = pd.read_feather(paths[1])
 dts = df.doctype.unique()
 
