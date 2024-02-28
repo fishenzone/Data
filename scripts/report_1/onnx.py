@@ -2,21 +2,17 @@ from transformers import AutoModel, AutoTokenizer
 import torch
 from pathlib import Path
 
-# Define model and tokenizer
 model_name = 'sentence-transformers/all-MiniLM-L6-v2'
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModel.from_pretrained(model_name)
 
-# Prepare output directory
 output_dir = Path("onnx_model")
 output_dir.mkdir(exist_ok=True, parents=True)
 output_model_path = output_dir / "model.onnx"
 
-# Set up dummy input for model export
 input_ids = torch.ones((1, 128), dtype=torch.int64)  # Example size, adjust as needed
 attention_mask = torch.ones_like(input_ids)
 
-# Export the model to ONNX with a higher opset version
 torch.onnx.export(model, 
                   args=(input_ids, attention_mask),
                   f=str(output_model_path),
@@ -26,9 +22,7 @@ torch.onnx.export(model,
                                 'attention_mask': {0: 'batch_size', 1: 'sequence'},
                                 'output': {0: 'batch_size', 1: 'sequence'}},
                   do_constant_folding=True,
-                  opset_version=12)  # Use a higher opset version, e.g., 12 or higher
+                  opset_version=12)  # Usex a higher opset version, e.g., 12 or higher
 
-# Save tokenizer
 tokenizer.save_pretrained(output_dir)
-
 print(f"Model and tokenizer saved to {output_dir}")
