@@ -1,11 +1,11 @@
 from IPython.display import display, HTML
 display(HTML("<style>.container { width:100% !important; }</style>"))
 
-%history -g -f history.txt
+# %history -g -f history.txt
 
 def extract_context(filename, keyword, context_len=1000):
-    with open(filename, 'r') as file:
-        text = file.read()
+    with open(filename, 'r') as f:
+        text = f.read()
 
     with open('context.txt', 'w') as outfile:
         i = 0
